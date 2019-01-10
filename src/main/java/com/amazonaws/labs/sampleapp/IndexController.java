@@ -61,11 +61,18 @@ public class IndexController {
     		model.addAttribute("instanceIds", Collections.<String>emptyList());
     		return "/index";
     	}
-        
-        final GetDeploymentGroupResult getResult = codeDeploy.getDeploymentGroup(new GetDeploymentGroupRequest()
-                .withApplicationName(applicationName)
-                .withDeploymentGroupName(deploymentGroupName));
 
+	GetDeploymentGroupResult getResult = null;
+        try {
+	    getResult = codeDeploy.getDeploymentGroup(new GetDeploymentGroupRequest()
+										     .withApplicationName(applicationName)
+										     .withDeploymentGroupName(deploymentGroupName));
+	}catch(Exception e) {
+	    e.printStackTrace();
+	    model.addAttribute("instanceIds", Collections.<String>emptyList());
+	    return "/index";
+	}
+	
         final List<String> instanceIds = new ArrayList<>();
         for (final EC2TagFilter filter : getResult.getDeploymentGroupInfo().getEc2TagFilters()) {
             Filter ec2DescribeFilter = getFilter(filter);
